@@ -14,7 +14,10 @@
 
   transition: filter 0.2s;
 
+  outline: none;
+
   &:hover{
     filter: brightness(1.2);
   }
 }
+
