@@ -2,11 +2,23 @@ import { GetStaticProps } from 'next';
 import Head from "next/head";
 import Prismic from '@prismicio/client';
 
+
 import { getPrismicClient } from '../../services/prismic';
 
 import styles from "./styles.module.scss"
+import { RichText } from 'prismic-dom';
 
-export default function Posts() {
+type Post = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  updated: string;
+}
+interface PostsProps {
+  posts: Post[];
+}
+
+export default function Posts({ posts }: PostsProps) {
 
   return (
     <>
@@ -16,27 +28,15 @@ export default function Posts() {
 
     <main className={styles.container}>
       <div className={styles.posts}>
-        <a href="#">
-          <time>02 de Abril de 2021</time>
-          <strong>Como renomear arquivos de uma vez usando o terminal</strong>
-          <p>Suponha que seu projeto tenha uma base de código com 150 arquivos JavaScript e você precisar migrar para TypeScript alterando as extensões dos arquivos. 🤔
-
-          Como renomear a extensão do arquivo de .js para .ts ou arquivos React de .jsx para .tsx de maneira fácil e rápida?</p>
+        { posts.map(post => (
+          <a href="#" key={post.slug}>
+          <time>{post.updated}</time>
+          <strong>{post.title}</strong>
+          <p>
+            {post.excerpt}
+          </p>
         </a>
-        <a href="#">
-          <time>02 de Abril de 2021</time>
-          <strong>Como renomear arquivos de uma vez usando o terminal</strong>
-          <p>Suponha que seu projeto tenha uma base de código com 150 arquivos JavaScript e você precisar migrar para TypeScript alterando as extensões dos arquivos. 🤔
-
-          Como renomear a extensão do arquivo de .js para .ts ou arquivos React de .jsx para .tsx de maneira fácil e rápida?</p>
-        </a>
-        <a href="#">
-          <time>02 de Abril de 2021</time>
-          <strong>Como renomear arquivos de uma vez usando o terminal</strong>
-          <p>Suponha que seu projeto tenha uma base de código com 150 arquivos JavaScript e você precisar migrar para TypeScript alterando as extensões dos arquivos. 🤔
-
-          Como renomear a extensão do arquivo de .js para .ts ou arquivos React de .jsx para .tsx de maneira fácil e rápida?</p>
-        </a>
+        ))}
       </div>
     </main>
     </>
@@ -55,9 +55,25 @@ export const getStaticProps: GetStaticProps = async () => {
     pageSize: 100, // quantidade máxima por página
   })
 
-  console.log(JSON.stringify(response, null, 2));
+  //console.log(JSON.stringify(response, null, 2));
+
+  // formatando os dados
+  const posts = response.results.map(post => {
+    return {
+      slug: post.uid,
+      title: RichText.asText(post.data.title),
+      excerpt: post.data.content.find(content => content.type === 'paragraph')?.text ?? '',
+      // procura um conteúdo que o tipo seja igual a paragraph, caso não encontre retorna uma string vazia
+      updatedAt: new Date(post.last_publication_date).toLocaleDateString('pt-BR' , {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      })
+    }
+  })
+
 
   return {
-    props: {}
+    props: {posts}
   }
 }
