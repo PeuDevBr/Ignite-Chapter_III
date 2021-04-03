@@ -1,14 +1,12 @@
 import { GetServerSideProps } from "next"
-import { getSession, useSession } from "next-auth/client"
+import { getSession} from "next-auth/client"
 import Head from "next/head"
 import { RichText } from "prismic-dom"
-import posts from "."
-
 import { getPrismicClient } from "../../services/prismic"
 
 import styles from './post.module.scss'
 
-interface Postprops {
+interface PostProps {
   post: {
     slug: string;
     title: string;
@@ -17,7 +15,7 @@ interface Postprops {
   }
 }
 
-export default function Post( { post }: Postprops) {
+export default function Post( { post }: PostProps) {
   return (
     <>
       <Head>
