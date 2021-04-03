@@ -1,4 +1,4 @@
-import { NextAuthRequest, NextAuthResponse } from "next-auth";
+import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import { stripe } from "../../services/stripe";
 import { fauna } from '../../services/fauna'
@@ -13,7 +13,7 @@ interface User {
   }
 }
 
-export default async(req: NextAuthRequest, res: NextAuthResponse) => {
+export default async(req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
     const session = await getSession({ req });
 
